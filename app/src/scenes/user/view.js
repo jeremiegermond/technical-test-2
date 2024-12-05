@@ -7,15 +7,21 @@ import Loader from "../../components/loader";
 import LoadingButton from "../../components/loadingButton";
 import api from "../../services/api";
 
-export default () => {
+const UserDetail = () => {
   const [user, setUser] = useState(null);
   const { id } = useParams();
+
   useEffect(() => {
     (async () => {
-      const response = await api.get(`/user/${id}`);
-      setUser(response.data);
+      try {
+        const response = await api.get(`/user/${id}`);
+        setUser(response.data);
+      } catch (error) {
+        console.error("Failed to fetch user:", error);
+        toast.error("Failed to load user details!");
+      }
     })();
-  }, []);
+  }, [id]);
 
   if (!user) return <Loader />;
 
@@ -32,118 +38,130 @@ const Detail = ({ user }) => {
   const history = useHistory();
 
   async function deleteData() {
-    const confirm = window.confirm("Are you sure ?");
+    const confirm = window.confirm("Are you sure?");
     if (!confirm) return;
-    await api.remove(`/user/${user._id}`);
-    toast.success("successfully removed!");
-    history.push(`/user`);
+
+    try {
+      await api.remove(`/user/${user._id}`);
+      toast.success("Successfully removed!");
+      history.push(`/user`);
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      toast.error("Failed to delete user.");
+    }
   }
 
   return (
     <Formik
-      initialValues={user}
-      onSubmit={async (values) => {
+      initialValues={{
+        name: user.name || "",
+        email: user.email || "",
+        status: user.status || "active",
+        job_title: user.job_title || "",
+        days_worked: user.days_worked || 0,
+        costPerDay: user.costPerDay || 0,
+        sellPerDay: user.sellPerDay || 0,
+        description: user.description || "",
+      }}
+      enableReinitialize
+      onSubmit={async (values, { setSubmitting }) => {
         try {
           await api.put(`/user/${user._id}`, values);
           toast.success("Updated!");
-        } catch (e) {
-          console.log(e);
-          toast.error("Some Error!");
+        } catch (error) {
+          console.error("Update error:", error);
+          toast.error("Failed to update user.");
+        } finally {
+          setSubmitting(false);
         }
-      }}
-    >
-      {({ values, handleChange, handleSubmit, isSubmitting }) => {
-        return (
-          <React.Fragment>
-            <div className="flex justify-between flex-wrap mt-4">
-              <div className="w-full md:w-[260px] mt-[10px] md:mt-0 ">
-                <div className="text-[14px] text-[#212325] font-medium	">Name</div>
-                <input
-                  className="projectsInput text-[14px] font-normal text-[#212325] bg-[#F9FBFD] rounded-[10px]"
-                  name="name"
-                  disabled
-                  value={values.name}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="w-full md:w-[260px] mt-[10px] md:mt-0">
-                <div className="text-[14px] text-[#212325] font-medium	">Email</div>
-                <input className="projectsInput text-[14px] font-normal text-[#212325] rounded-[10px]" name="email" value={values.email} onChange={handleChange} />
-              </div>
-              <div className="w-full md:w-[165px] mt-[10px] md:mt-0">
-                <div className="text-[14px] text-[#212325] font-medium	">Status</div>
-                <select className="projectsInput text-[14px] font-normal text-[#212325] rounded-[10px]" type="select" name="status" value={values.status} onChange={handleChange}>
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
-                </select>
-              </div>
+      }}>
+      {({ values, handleChange, handleSubmit, isSubmitting }) => (
+        <>
+          <div className="flex justify-between flex-wrap mt-4">
+            <div className="w-full md:w-[260px] mt-[10px] md:mt-0">
+              <label className="text-[14px] text-[#212325] font-medium">Name</label>
+              <input className="projectsInput text-[14px] font-normal text-[#212325] bg-[#F9FBFD] rounded-[10px]" name="name" value={values.name} onChange={handleChange} />
             </div>
-            <div className="flex flex-wrap justify-between mt-4	space-x-3">
-              <div className="w-full md:w-[260px] ">
-                <div className="text-[14px] text-[#212325] font-medium">Job title</div>
-                <input
-                  className="projectsInput text-[14px] font-normal text-[#212325] rounded-[10px] bg-[#fff]"
-                  name="job_title"
-                  value={values.job_title}
-                  onChange={handleChange}
-                />
-              </div>
+            <div className="w-full md:w-[260px] mt-[10px] md:mt-0">
+              <label className="text-[14px] text-[#212325] font-medium">Email</label>
+              <input className="projectsInput text-[14px] font-normal text-[#212325] rounded-[10px]" name="email" value={values.email} onChange={handleChange} />
             </div>
+            <div className="w-full md:w-[165px] mt-[10px] md:mt-0">
+              <label className="text-[14px] text-[#212325] font-medium">Status</label>
+              <select className="projectsInput text-[14px] font-normal text-[#212325] rounded-[10px]" name="status" value={values.status} onChange={handleChange}>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </div>
+          </div>
 
-            <div className="flex flex-wrap justify-between mt-4">
-              <div className="w-full md:w-[260px] ">
-                <div className="text-[14px] text-[#212325] font-medium	">Days worked</div>
-                <input
-                  className="projectsInput text-[14px] font-normal text-[#212325] rounded-[10px]"
-                  type="number"
-                  name="days_worked"
-                  value={values.days_worked}
-                  onChange={handleChange}
-                />{" "}
-              </div>
-              <div className="w-full md:w-[260px] ">
-                <div className="text-[14px] text-[#212325] font-medium	">Cost per day</div>
-                <input
-                  className="projectsInput text-[14px] font-normal text-[#212325] rounded-[10px]"
-                  type="number"
-                  name="costPerDay"
-                  value={values.costPerDay}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="w-full md:w-[260px] ">
-                <div className="text-[14px] text-[#212325] font-medium	">Sell per day</div>
-                <input
-                  className="projectsInput text-[14px] font-normal text-[#212325] rounded-[10px]"
-                  type="number"
-                  name="sellPerDay"
-                  value={values.sellPerDay}
-                  onChange={handleChange}
-                />
-              </div>
+          {/* Additional Inputs */}
+          <div className="flex flex-wrap justify-between mt-4">
+            <div className="w-full md:w-[260px]">
+              <label className="text-[14px] text-[#212325] font-medium">Job title</label>
+              <input className="projectsInput text-[14px] font-normal text-[#212325] rounded-[10px] bg-[#fff]" name="job_title" value={values.job_title} onChange={handleChange} />
             </div>
-            <div className="w-full mt-3">
-              <div className="text-[14px] text-[#212325] font-medium	">Description</div>
-              <textarea
-                className="w-full text-[14px] font-normal text-[#212325] border border-[#ced4da] mt-2 rounded-[10px] text-sm p-2  focus:outline-none focus:ring focus:ring-[#80bdff]"
-                rows="12"
-                name="description"
-                value={values.description}
+          </div>
+
+          {/* Numeric Inputs */}
+          <div className="flex flex-wrap justify-between mt-4">
+            <div className="w-full md:w-[260px]">
+              <label className="text-[14px] text-[#212325] font-medium">Days worked</label>
+              <input
+                className="projectsInput text-[14px] font-normal text-[#212325] rounded-[10px]"
+                type="number"
+                name="days_worked"
+                value={values.days_worked}
                 onChange={handleChange}
-              ></textarea>
+              />
             </div>
+            <div className="w-full md:w-[260px]">
+              <label className="text-[14px] text-[#212325] font-medium">Cost per day</label>
+              <input
+                className="projectsInput text-[14px] font-normal text-[#212325] rounded-[10px]"
+                type="number"
+                name="costPerDay"
+                value={values.costPerDay}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="w-full md:w-[260px]">
+              <label className="text-[14px] text-[#212325] font-medium">Sell per day</label>
+              <input
+                className="projectsInput text-[14px] font-normal text-[#212325] rounded-[10px]"
+                type="number"
+                name="sellPerDay"
+                value={values.sellPerDay}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
 
-            <div className="flex  mt-2">
-              <LoadingButton className="bg-[#0560FD] text-[16px] font-medium text-[#FFFFFF] py-[12px] px-[22px] rounded-[10px]" loading={isSubmitting} onChange={handleSubmit}>
-                Update
-              </LoadingButton>
-              <button className="ml-[10px] bg-[#F43F5E] text-[16px] font-medium text-[#FFFFFF] py-[12px] px-[22px] rounded-[10px]" onClick={deleteData}>
-                Delete
-              </button>
-            </div>
-          </React.Fragment>
-        );
-      }}
+          {/* Description */}
+          <div className="w-full mt-3">
+            <label className="text-[14px] text-[#212325] font-medium">Description</label>
+            <textarea
+              className="w-full text-[14px] font-normal text-[#212325] border border-[#ced4da] mt-2 rounded-[10px] text-sm p-2 focus:outline-none focus:ring focus:ring-[#80bdff]"
+              rows="12"
+              name="description"
+              value={values.description}
+              onChange={handleChange}
+            />
+          </div>
+
+          {/* Buttons */}
+          <div className="flex mt-2">
+            <LoadingButton className="bg-[#0560FD] text-[16px] font-medium text-[#FFFFFF] py-[12px] px-[22px] rounded-[10px]" loading={isSubmitting} onClick={handleSubmit}>
+              Update
+            </LoadingButton>
+            <button className="ml-[10px] bg-[#F43F5E] text-[16px] font-medium text-[#FFFFFF] py-[12px] px-[22px] rounded-[10px]" type="button" onClick={deleteData}>
+              Delete
+            </button>
+          </div>
+        </>
+      )}
     </Formik>
   );
 };
+
+export default UserDetail;
