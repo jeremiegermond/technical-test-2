@@ -1,8 +1,6 @@
 import { Chart as ChartJS, registerables } from "chart.js";
 import React, { useEffect, useState } from "react";
-import { IoIosAt, IoIosLink, IoIosStats, IoLogoGithub } from "react-icons/io";
-import { RiRoadMapLine } from "react-icons/ri";
-import { useSelector } from "react-redux";
+import { IoIosAt, IoIosLink } from "react-icons/io";
 import { useHistory, useParams } from "react-router-dom";
 
 import { getDaysInMonth } from "./utils";
@@ -47,8 +45,7 @@ export default function ProjectView() {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => history.push(`/project/edit/${project?._id}`)}
-                className="border !border-[#0560FD] text-[#0560FD] py-[7px] px-[20px] bg-[#FFFFFF] rounded-[16px]"
-              >
+                className="border !border-[#0560FD] text-[#0560FD] py-[7px] px-[20px] bg-[#FFFFFF] rounded-[16px]">
                 Edit
               </button>
             </div>
@@ -71,7 +68,7 @@ const ProjectDetails = ({ project }) => {
               <div className="flex justify-between gap-2">
                 <div className="flex gap-20">
                   <span className="w-fit text-[20px] text-[#0C1024] font-bold">Nom du projet : </span>
-                  <span className="w-fit text-[20px] text-[#0C1024] font-bold">{project.name.toString()}</span>
+                  <span className="w-fit text-[20px] text-[#0C1024] font-bold">{project.name?.toString()}</span>
                 </div>
                 <div className="flex flex-1 flex-column items-end gap-3">
                   <Links project={project} />
@@ -175,10 +172,9 @@ const Activities = ({ project }) => {
                       const date = _date.getDate();
                       return (
                         <th
-                          className={`w-[20px] border border-[#E5EAEF] text-[12px] font-semibold text-center ${day == 0 || day == 6 ? "bg-[#FFD5F1]" : "bg-[white]"}`}
+                          className={`w-[20px] border border-[#E5EAEF] text-[12px] font-semibold text-center ${day === 0 || day === 6 ? "bg-[#FFD5F1]" : "bg-[white]"}`}
                           key={e}
-                          day={day}
-                        >
+                          day={day}>
                           <div>{weekday}</div>
                           <div>{date}</div>
                         </th>
@@ -276,7 +272,7 @@ const Links = ({ project }) => {
         </div>
       )}
       {project.links?.map((link) => (
-        <div className="group text-sm font-medium	text-blue-700 border-[1px] border-blue-700 rounded-full overflow-hidden">
+        <div key={link} className="group text-sm font-medium	text-blue-700 border-[1px] border-blue-700 rounded-full overflow-hidden">
           <a target="blank" href={link.url} className="break-words cursor-pointer text-blue-700 hover:text-white hover:bg-blue-700 flex hover:no-underline h-full">
             <div className="flex items-center bg-blue-700 py-1 px-2 rounded-r-full ">
               <IoIosLink className="group-hover:scale-110 text-white" />
