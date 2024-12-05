@@ -70,7 +70,7 @@ const ProjectDetails = ({ project }) => {
               <div className="flex justify-between gap-2">
                 <div className="flex gap-20">
                   <span className="w-fit text-[20px] text-[#0C1024] font-bold">Nom du projet : </span>
-                  <span className="w-fit text-[20px] text-[#0C1024] font-bold">{project.name?.toString()}</span>
+                  <span className="w-fit text-[20px] text-[#0C1024] font-bold">{project[0].name?.toString()}</span>
                 </div>
                 <div className="flex flex-1 flex-column items-end gap-3">
                   <Links project={project} />
@@ -78,13 +78,13 @@ const ProjectDetails = ({ project }) => {
               </div>
               <div className="w-full md:w-[50%]">
                 <div className="pt-2 ">
-                  <span className="text-[16px] text-[#676D7C] font-medium">{project.description ? project.description : ""}</span>
+                  <span className="text-[16px] text-[#676D7C] font-medium">{project[0].description ? project[0].description : ""}</span>
                 </div>
                 <div className="mt-4 text-[18px] text-[#000000] font-semibold">
-                  {`Objective :`} <span className="text-[#676D7C] text-[16px] font-medium">{project.objective ? project.objective : ""}</span>
+                  {`Objective :`} <span className="text-[#676D7C] text-[16px] font-medium">{project[0].objective ? project[0].objective : ""}</span>
                 </div>
                 <div className="mt-2 mr-2">
-                  <span className="text-[18px] font-semibold text-[#000000]">Budget consummed {project.paymentCycle === "MONTHLY" && "this month"}:</span>
+                  <span className="text-[18px] font-semibold text-[#000000]">Budget consummed {project[0].paymentCycle === "MONTHLY" && "this month"}:</span>
 
                   <Budget project={project} />
                 </div>
@@ -105,21 +105,21 @@ const Budget = ({ project }) => {
     (async () => {
       let d = new Date();
       let dateQuery = "";
-      if (project.paymentCycle === "ONE_TIME") {
-        d = new Date(project.created_at);
+      if (project[0].paymentCycle === "ONE_TIME") {
+        d = new Date(project[0].created_at);
         dateQuery = "gte:";
       }
       const date = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1));
-      const { data } = await api.get(`/activity?projectId=${encodeURIComponent(project._id)}&date=${dateQuery}${date.getTime()}`);
+      const { data } = await api.get(`/activity?projectId=${encodeURIComponent(project[0]._id)}&date=${dateQuery}${date.getTime()}`);
       setActivities(data);
     })();
   }, []);
 
   const total = activities.reduce((acc, cur) => acc + cur.value, 0);
-  const budget_max_monthly = project.budget_max_monthly;
+  const budget_max_monthly = project[0].budget_max_monthly;
   const width = (100 * total) / budget_max_monthly || 0;
 
-  if (!project.budget_max_monthly) return <div className="mt-2 text-[24px] text-[#212325] font-semibold">{total.toFixed(2)}€</div>;
+  if (!project[0].budget_max_monthly) return <div className="mt-2 text-[24px] text-[#212325] font-semibold">{total.toFixed(2)}€</div>;
   return <ProgressBar percentage={width} max={budget_max_monthly} value={total} />;
 };
 
@@ -138,7 +138,7 @@ const Activities = ({ project }) => {
       let date_to = new Date(date);
       date_to.setMonth(date_to.getMonth() + 1);
       date_to.setDate(0);
-      const { data } = await api.get(`/activity?dateFrom=${from.getTime()}&dateTo=${date_to.getTime()}&projectId=${encodeURIComponent(project._id)}`);
+      const { data } = await api.get(`/activity?dateFrom=${from.getTime()}&dateTo=${date_to.getTime()}&projectId=${encodeURIComponent(project[0]._id)}`);
       const users = await api.get(`/user`);
 
       setActivities(
@@ -263,9 +263,9 @@ const Field = ({ value = "-", ...rest }) => {
 const Links = ({ project }) => {
   return (
     <div className="flex flex-wrap gap-3">
-      {project.website && (
+      {project[0].website && (
         <div className="group text-sm font-medium	text-gray-700 border-[1px] border-gray-700 rounded-full overflow-hidden">
-          <a target="blank" href={project.website} className="break-words cursor-pointer text-gray-700 hover:text-white hover:bg-gray-700 flex hover:no-underline h-full">
+          <a target="blank" href={project[0].website} className="break-words cursor-pointer text-gray-700 hover:text-white hover:bg-gray-700 flex hover:no-underline h-full">
             <div className="flex items-center bg-gray-700 py-1 px-2 rounded-r-full ">
               <IoIosAt className="group-hover:scale-110 text-white" />
             </div>
@@ -273,7 +273,7 @@ const Links = ({ project }) => {
           </a>
         </div>
       )}
-      {project.links?.map((link) => (
+      {project[0].links?.map((link) => (
         <div key={link} className="group text-sm font-medium	text-blue-700 border-[1px] border-blue-700 rounded-full overflow-hidden">
           <a target="blank" href={link.url} className="break-words cursor-pointer text-blue-700 hover:text-white hover:bg-blue-700 flex hover:no-underline h-full">
             <div className="flex items-center bg-blue-700 py-1 px-2 rounded-r-full ">
