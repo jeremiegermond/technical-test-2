@@ -9,8 +9,18 @@ const PROJECT_ALREADY_EXISTS = "PROJECT_ALREADY_EXISTS";
 
 router.get("/list", passport.authenticate("user", { session: false }), async (req, res) => {
   try {
-    const data = await ProjectObject.find({ ...req.query, organisation: req.user.organisation }).sort("-last_updated_at");
-    return res.status(200).send({ ok: true, data });
+    const projects = await ProjectObject.find({ ...req.query, organisation: req.user.organisation }).sort("-last_updated_at");
+
+    const currentDate = new Date();
+    const updatedProjects = projects.map(project => {
+      const dueDate = new Date(project.due_date);
+      const timeDifference = dueDate - currentDate;
+      const isDueSoon = timeDifference <= 3 * 24 * 60 * 60 * 1000 && timeDifference > 0;
+      const isLate = timeDifference < 0;
+      return { ...project.toObject(), is_due_soon: isDueSoon, is_late: isLate };
+    });
+
+    return res.status(200).send({ ok: true, data: updatedProjects });
   } catch (error) {
     console.log(error);
     res.status(500).send({ ok: false, code: SERVER_ERROR, error });
