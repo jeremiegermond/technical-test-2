@@ -51,7 +51,19 @@ router.post("/", passport.authenticate("user", { session: false }), async (req, 
 router.get("/", passport.authenticate("user", { session: false }), async (req, res) => {
   try {
     const data = await ProjectObject.find({ ...req.query, organisation: req.user.organisation }).sort("-last_updated_at");
-    return res.status(200).send({ ok: true, data });
+
+    const currentDate = new Date();
+    const updatedProjects = data.map(project => {
+      const dueDate = new Date(project.due_date || currentDate);
+      const timeDifference = dueDate - currentDate;
+
+      const isDueSoon = timeDifference <= 6 * 60 * 60 * 1000 && timeDifference > 0; // 6 heures
+      const isLate = timeDifference < 0;
+
+      return { ...project.toObject(), is_due_soon: isDueSoon, is_late: isLate };
+    });
+
+    return res.status(200).send({ ok: true, data: updatedProjects });
   } catch (error) {
     console.log(error);
     res.status(500).send({ ok: false, code: SERVER_ERROR, error });
