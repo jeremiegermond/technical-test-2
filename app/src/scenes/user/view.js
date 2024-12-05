@@ -50,7 +50,8 @@ const Detail = ({ user }) => {
           console.log(e);
           toast.error("Some Error!");
         }
-      }}>
+      }}
+    >
       {({ values, handleChange, handleSubmit, isSubmitting }) => {
         return (
           <React.Fragment>
@@ -128,7 +129,8 @@ const Detail = ({ user }) => {
                 rows="12"
                 name="description"
                 value={values.description}
-                onChange={handleChange}></textarea>
+                onChange={handleChange}
+              ></textarea>
             </div>
 
             <div className="flex  mt-2">

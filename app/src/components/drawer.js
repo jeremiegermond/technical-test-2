@@ -32,7 +32,8 @@ const Link = ({ Icon, title, to, onClick = () => {} }) => {
         style={{ textDecoration: "none" }}
         className="px-4 py-3 w-full h-11 flex gap-3 items-center rounded-xl text-[#676D7C] text-base hover:text-[#0560FD] fill-[#676D7C] hover:fill-[#0560FD]"
         to={to}
-        activeClassName="bg-[#0560FD] !text-[#FFFFFF] !fill-[#FFFFFF]">
+        activeClassName="bg-[#0560FD] !text-[#FFFFFF] !fill-[#FFFFFF]"
+      >
         <Icon />
         <span>{title}</span>
       </NavLink>
@@ -45,7 +46,8 @@ const Section = ({ children, title }) => {
     <div>
       <h1
         className="flex gap-1 items-center uppercase text-[10px] text-gray-400 tracking-wide font-semibold mt-4 cursor-pointer hover:underline mb-2"
-        onClick={() => setOpen((o) => !o)}>
+        onClick={() => setOpen((o) => !o)}
+      >
         {title}
       </h1>
 

@@ -55,7 +55,8 @@ export default function EditProject() {
                 console.log(e);
                 toast.error("Some Error!");
               }
-            }}>
+            }}
+          >
             {({ values, handleChange, handleSubmit, isSubmitting }) => (
               <React.Fragment>
                 <div className="flex gap-4 pl-4 pt-4">
@@ -98,7 +99,8 @@ export default function EditProject() {
                         className="projectsInput text-[14px] font-normal text-[#212325] rounded-[10px]"
                         name="paymentCycle"
                         value={values.paymentCycle}
-                        onChange={handleChange}>
+                        onChange={handleChange}
+                      >
                         <option value=""></option>
                         <option value="MONTHLY">Monthly</option>
                         <option value="ONE_TIME">One time</option>
@@ -115,7 +117,8 @@ export default function EditProject() {
                       placeholder="Please your comment...."
                       name="description"
                       value={values.description}
-                      onChange={handleChange}></textarea>
+                      onChange={handleChange}
+                    ></textarea>
                   </div>
 
                   <div className="w-full mt-3">
@@ -127,7 +130,8 @@ export default function EditProject() {
                       placeholder="Please your comment...."
                       name="objective"
                       value={values.objective}
-                      onChange={handleChange}></textarea>
+                      onChange={handleChange}
+                    ></textarea>
                   </div>
                   <div className="text-xl mt-8">Links</div>
                   <div className="w-full mt-3">
@@ -191,7 +195,8 @@ export default function EditProject() {
                         handleChange({ target: { value: [...values.links, newLink], name: "links" } });
                         setBufferOtherLink("");
                         setBufferOtherLinkLabel("");
-                      }}>
+                      }}
+                    >
                       <input
                         className="projectsInput text-[14px] font-normal text-[#212325] rounded-[10px]"
                         name="other-links-label"
@@ -223,7 +228,8 @@ export default function EditProject() {
                   <LoadingButton
                     className="ml-[10px] bg-[#0560FD] text-[16px] font-medium text-[#fff] py-[12px] px-[22px] rounded-[10px]"
                     loading={isSubmitting}
-                    onClick={handleSubmit}>
+                    onClick={handleSubmit}
+                  >
                     Update
                   </LoadingButton>
                   <button className="ml-[10px] bg-[#F43F5E] text-[16px] font-medium text-[#fff] py-[12px] px-[22px] rounded-[10px]" onClick={deleteData}>
