@@ -17,6 +17,7 @@ const ProjectList = () => {
   useEffect(() => {
     (async () => {
       const { data: u } = await api.get("/project");
+      console.log("u", u);
       setProjects(u);
     })();
   }, []);
@@ -42,8 +43,7 @@ const ProjectList = () => {
             <div
               key={hit._id}
               onClick={() => history.push(`/project/${hit._id}`)}
-              className="flex justify-between flex-wrap p-3 border border-[#FFFFFF] bg-[#F9FBFD] rounded-[16px] mt-3 cursor-pointer"
-            >
+              className="flex justify-between flex-wrap p-3 border border-[#FFFFFF] bg-[#F9FBFD] rounded-[16px] mt-3 cursor-pointer">
               <div className="flex w-full md:w-[25%] border-r border-[#E5EAEF]">
                 <div className="flex flex-wrap gap-4 items-center">
                   {hit.logo && <img className="w-[85px] h-[85px] rounded-[8px] object-contain	" src={hit.logo} alt="ProjectImage.png" />}
@@ -55,9 +55,15 @@ const ProjectList = () => {
               <div className="w-full md:w-[50%] border-r border-[#E5EAEF] pl-[10px]">
                 <span className="text-[14px] font-medium text-[#212325]">{hit.description ? hit.description : ""}</span>
               </div>
+
               <div className="w-full md:w-[25%]  px-[10px]">
                 <span className="text-[16px] font-medium text-[#212325]">Budget consumed {hit.paymentCycle === "MONTHLY" && "this month"}:</span>
                 <Budget project={hit} />
+                <div className="flex items-center">
+                  {hit.is_late && <span className="text-red-500 font-semibold">🚨 Project is late</span>}
+                  {hit.is_due_soon && !hit.is_late && <span className="text-yellow-500 font-semibold">⚠️ Limit date is approaching</span>}
+                  {!hit.is_late && !hit.is_due_soon && <span className="text-green-500 font-semibold">✅ Project is on track</span>}
+                </div>
               </div>
             </div>
           );
@@ -121,8 +127,7 @@ const Create = ({ onChangeSearch }) => {
           className="bg-[#0560FD] text-[#fff] py-[12px] px-[20px] rounded-[10px] text-[16px] font-medium"
           onClick={() => {
             setOpen(true);
-          }}
-        >
+          }}>
           Create new project
         </button>
       </div>
@@ -132,14 +137,12 @@ const Create = ({ onChangeSearch }) => {
           className=" absolute top-0 bottom-0 left-0 right-0 bg-[#00000066] flex justify-center p-[1rem] z-50 "
           onClick={() => {
             setOpen(false);
-          }}
-        >
+          }}>
           <div
             className="w-full md:w-[60%] max-h-[200px] bg-[white] p-[25px] rounded-md"
             onClick={(e) => {
               e.stopPropagation();
-            }}
-          >
+            }}>
             {/* Modal Body */}
             <Formik
               initialValues={{}}
@@ -155,8 +158,7 @@ const Create = ({ onChangeSearch }) => {
                   toast.error("Some Error!", e.code);
                 }
                 setSubmitting(false);
-              }}
-            >
+              }}>
               {({ values, handleChange, handleSubmit, isSubmitting }) => (
                 <React.Fragment>
                   <div className="w-full md:w-6/12 text-left">
@@ -167,8 +169,7 @@ const Create = ({ onChangeSearch }) => {
                     <LoadingButton
                       className="mt-[1rem] bg-[#0560FD] text-[16px] font-medium text-[#FFFFFF] py-[12px] px-[22px] rounded-[10px]"
                       loading={isSubmitting}
-                      onClick={handleSubmit}
-                    >
+                      onClick={handleSubmit}>
                       Create
                     </LoadingButton>
                   </div>
